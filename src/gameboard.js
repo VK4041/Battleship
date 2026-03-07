@@ -4,9 +4,14 @@ export default class Gameboard {
     this.grid = Array.from({ length: 10 }, () => Array.from({ length: 10 }));
     this.ships = [];
   }
-  isValidPlacement(x, y, length) {
-    //Check if the ship will collide with another or not before adding it to the board
-    //If so, it must not be added to the board, not even partially
+  isDuplicateShip(name) {
+    let result = false;
+    this.ships.forEach((ship) => {
+      if (ship.name === name) {
+        result = true;
+      }
+    });
+    return result;
   }
   outOfBounds(x, y, vertical, length) {
     let result = x < 0 || x > 9 || y < 0 || y > 9;
@@ -32,6 +37,8 @@ export default class Gameboard {
     const ship = new Ship(length, ...[, ,], name);
     let i = x,
       j = y;
+    if (this.isDuplicateShip(name))
+      throw new Error("Ship with the same name already present on board");
     if (this.willCollide(x, y, vertical, length))
       throw new Error("Ship is colliding with another ship");
     if (this.outOfBounds(x, y, vertical, length))
