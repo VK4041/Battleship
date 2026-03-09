@@ -1,4 +1,4 @@
-import Ship from "../src/ship.js";
+import Ship from "../ship.js";
 
 describe("Testing sink", () => {
   const testShip = new Ship(4);

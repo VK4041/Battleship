@@ -1,4 +1,4 @@
-import Gameboard from "../src/gameboard.js";
+import Gameboard from "../gameboard.js";
 
 describe("Testing placement of ships", () => {
   test("Placing the ship at given coords", () => {
