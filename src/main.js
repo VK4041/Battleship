@@ -2,16 +2,105 @@ import Player from "./player.js";
 const player1 = new Player("varun", "real");
 const player2 = new Player("cpu", "cpu");
 let turnHandler;
+function enterShipData() {
+  alert(
+    "This game runs on your input, feel free to just spam enter/ok for random ship placements",
+  );
+  const numShips = parseInt(prompt("How many ships do you want to place?", 4));
+  let shipCount = 1;
+  let shipName;
+  let playerShipX;
+  let playerShipY;
+  let playerVertical;
+  let playerShipLength;
+  let cpuShipX;
+  let cpuShipy;
+  let cpuShipLength;
+  let cpuVertical;
+  alert(`First place your ${numShips} ships`);
+  do {
+    alert(`Let's place ship #${shipCount}`);
+    shipName = "ship" + shipCount;
+    let [randomX, randomY] = generateRandomCoordinates();
+    playerShipX = parseInt(prompt("Enter X coordinate", randomX));
+    playerShipY = parseInt(prompt("Enter Y coordinate", randomY));
+    playerVertical = prompt(
+      "Do you want to place it vertically? yes or no",
+      generateRandomVertical(),
+    );
+    playerVertical = playerVertical === "true" || playerVertical === "yes";
+    playerShipLength = parseInt(
+      prompt("Enter length of ship", generateRandomShipLength()),
+    );
+    if (
+      player1.gameboard.willCollide(
+        playerShipX,
+        playerShipY,
+        playerVertical,
+        playerShipLength,
+      ) ||
+      player1.gameboard.outOfBounds(
+        playerShipX,
+        playerShipY,
+        playerVertical,
+        playerShipLength,
+      ) ||
+      player1.gameboard.isDuplicateShip(shipName)
+    ) {
+      alert("Ship could not be placed, try again");
+      continue;
+    } else {
+      placePlayerShip(
+        player1,
+        playerShipX,
+        playerShipY,
+        playerShipLength,
+        playerVertical,
+        shipName,
+      );
+      shipCount++;
+    }
+  } while (shipCount <= numShips);
+
+  //Now placing cpu's random ships
+  shipCount = 1;
+  do {
+    shipName = "ship" + shipCount;
+    [cpuShipX, cpuShipy] = generateRandomCoordinates();
+    cpuVertical = generateRandomVertical();
+    cpuShipLength = generateRandomShipLength();
+    if (
+      player2.gameboard.willCollide(
+        cpuShipX,
+        cpuShipy,
+        cpuVertical,
+        cpuShipLength,
+      ) ||
+      player2.gameboard.outOfBounds(
+        cpuShipX,
+        cpuShipy,
+        cpuVertical,
+        cpuShipLength,
+      ) ||
+      player2.gameboard.isDuplicateShip(shipName)
+    ) {
+      alert("Ship could not be placed, try again");
+      continue;
+    } else {
+      placePlayerShip(
+        player2,
+        cpuShipX,
+        cpuShipy,
+        cpuShipLength,
+        cpuVertical,
+        shipName,
+      );
+      shipCount++;
+    }
+  } while (shipCount <= numShips);
+}
 function playGame() {
-  //Placing the ships on each player's board preemtively for now
-  placePlayerShip(player1, 1, 1, 4, false, "ship1");
-  placePlayerShip(player1, 5, 3, 4, false, "ship2");
-  placePlayerShip(player1, 7, 7, 2, true, "ship3");
-
-  placePlayerShip(player2, 0, 0, 2, true, "ship1");
-  placePlayerShip(player2, 1, 6, 4, false, "ship2");
-  placePlayerShip(player2, 4, 2, 4, false, "ship3");
-
+  enterShipData();
   const [grid1, grid2] = initBoards();
   turnHandler = (e) => {
     clickHandler(e, grid1, grid2);
@@ -25,6 +114,14 @@ function placePlayerShip(player, x, y, length, vertical, name) {
   ) {
     //the ship is legal to place
     player.gameboard.placeShip(x, y, length, vertical, name);
+    console.log({
+      "Player Name": player.name,
+      "Player Type": player.type,
+      "Ship Length": length,
+      Vertical: vertical,
+      X: x,
+      Y: y,
+    });
   } else {
     throw new Error("Could not place ship");
   }
@@ -86,7 +183,12 @@ function clickHandler(event, grid1, grid2) {
   }
 }
 function cpuAttack(grid1, grid2) {
-  const [x, y] = generateRandomAttack();
+  let x;
+  let y;
+  //Keep generating coords until unattacked coords is generated
+  do {
+    [x, y] = generateRandomCoordinates();
+  } while (player1.gameboard.alreadyAttacked(x, y));
   console.log(`CPU attacked ${x},${y}`);
   const attack = player1.gameboard.receiveAttack(x, y);
   const cell = grid1.querySelector(`[data-x='${x}'][data-y='${y}']`);
@@ -97,14 +199,17 @@ function cpuAttack(grid1, grid2) {
     return;
   }
 }
-function generateRandomAttack() {
-  let x;
-  let y;
-  do {
-    x = Math.floor(Math.random() * 10);
-    y = Math.floor(Math.random() * 10);
-  } while (player1.gameboard.alreadyAttacked(x, y));
+function generateRandomCoordinates() {
+  let x = Math.floor(Math.random() * 10);
+  let y = Math.floor(Math.random() * 10);
   return [x, y];
+}
+function generateRandomShipLength() {
+  //Ship length between 1 and 5
+  return Math.floor(Math.random() * 5) + 1;
+}
+function generateRandomVertical() {
+  return Math.floor(Math.random() * 2) ? true : false;
 }
 function showHitMiss(cell, status) {
   if (status === "hit") {
