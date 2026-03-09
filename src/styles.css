@@ -36,3 +36,9 @@ body {
   justify-content: center;
   gap: 5rem;
 }
+.hit {
+  background-color: red;
+}
+.missed {
+  background-color: grey;
+}
