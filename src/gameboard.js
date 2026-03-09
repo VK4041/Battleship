@@ -20,8 +20,8 @@ export default class Gameboard {
   outOfBounds(x, y, vertical = false, length = 0) {
     let result = x < 0 || x > 9 || y < 0 || y > 9;
     if (result) return result; //early return
-    if (vertical) result = x + length > 9;
-    else result = y + length > 9;
+    if (vertical) result = x + length > 10;
+    else result = y + length > 10;
     return result; //return when ship size doesn't fit inside bounds
   }
   willCollide(x, y, vertical, length) {

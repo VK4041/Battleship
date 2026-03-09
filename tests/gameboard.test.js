@@ -10,7 +10,7 @@ describe("Testing placement of ships", () => {
     testBoard.placeShip(5, 6, 2, false, "testShip");
     expect(() => testBoard.placeShip(3, 3, 1, true, "testShip")).toThrow(Error);
   });
-  test("Placing ship out of the grid 1/2", () => {
+  test("Placing ship out of the grid", () => {
     const testBoard = new Gameboard();
     expect(() => testBoard.placeShip(12, 12, 4, false, "testShip")).toThrow(
       Error,
@@ -22,6 +22,8 @@ describe("Testing placement of ships", () => {
       Error,
     );
   });
+});
+describe("Testing attacks on ships", () => {
   test("Testing attack on an out of bound cell", () => {
     const testBoard = new Gameboard();
     expect(() => testBoard.receiveAttack(11, 11)).toThrow(Error);
@@ -40,7 +42,7 @@ describe("Testing placement of ships", () => {
     testBoard.placeShip(1, 1, 4, false, "testShip");
     expect(testBoard.receiveAttack(1, 3)).toBe("hit");
   });
-  test.only("Testing sunken ship", () => {
+  test("Testing sunken ship", () => {
     const testBoard = new Gameboard();
     testBoard.placeShip(1, 1, 4, false, "testShip");
 
